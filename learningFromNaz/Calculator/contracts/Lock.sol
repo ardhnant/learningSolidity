@@ -4,31 +4,28 @@ pragma solidity ^0.8.28;
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
-contract Lock {
-    uint public unlockTime;
-    address payable public owner;
+contract Calculator {
+    uint result = 0;
 
-    event Withdrawal(uint amount, uint when);
-
-    constructor(uint _unlockTime) payable {
-        require(
-            block.timestamp < _unlockTime,
-            "Unlock time should be in the future"
-        );
-
-        unlockTime = _unlockTime;
-        owner = payable(msg.sender);
+    function add(uint num) public {
+        result += num;
     }
 
-    function withdraw() public {
-        // Uncomment this line, and the import of "hardhat/console.sol", to print a log in your terminal
-        // console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);
+    function subtract(uint num) public {
+        require(num <= result, "Cannot perform the calculus");
+        result -= num;
+    }
 
-        require(block.timestamp >= unlockTime, "You can't withdraw yet");
-        require(msg.sender == owner, "You aren't the owner");
+    function multiply(uint num) public {
+        result *= num;
+    }
 
-        emit Withdrawal(address(this).balance, block.timestamp);
+    function divide(uint num) public {
+        require(num > 0, "Can not do the calculus");
+        result /= num;
+    }
 
-        owner.transfer(address(this).balance);
+    function get() public view returns (uint) {
+        return result;
     }
 }
