@@ -13,11 +13,16 @@ contract Twitter {
         uint likes;
     }
 
+    uint16 MAX_TWEET_LENGTH = 280;
+
     //write your code
     mapping(address => Tweet[]) public tweets;
 
     //creating a function for adding tweets and linking them to the wallet id
     function createTweet(string memory _tweet) public {
+        //using require to limit the length of tweets
+        require(bytes(_tweet).length <= MAX_TWEET_LENGTH, "Max limit exceded");
+
         Tweet memory newTweet = Tweet({
             author: msg.sender,
             content: _tweet,
@@ -29,14 +34,11 @@ contract Twitter {
         tweets[msg.sender].push(newTweet);
     }
 
-    function getTweet(
-        address _owner,
-        uint _i
-    ) public view returns (Tweet memory) {
-        return tweets[_owner][_i];
+    function getTweet(uint _i) public view returns (Tweet memory) {
+        return tweets[msg.sender][_i];
     }
 
-    function getAllTweet(address owner) public view returns (Tweet[] memory) {
-        return tweets[owner];
+    function getAllTweet() public view returns (Tweet[] memory) {
+        return tweets[msg.sender];
     }
 }
