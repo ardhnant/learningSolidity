@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
-// 4️⃣ Use onlyOwner on the changeTweetLength function
-
 pragma solidity ^0.8.0;
 
 contract Twitter {
-    uint16 maxTweet = 0;
+    uint16 public maxTweet = 0;
     address public owner;
 
     constructor() {
@@ -12,6 +10,7 @@ contract Twitter {
     }
 
     struct Tweet {
+        uint16 id;
         address author;
         string content;
         uint256 timestamp;
@@ -21,14 +20,11 @@ contract Twitter {
     mapping(address => Tweet[]) public tweets;
 
     modifier onlyOwner() {
-        require(
-            msg.sender == owner,
-            "Oops, you are not the owner. Please try again with diffirent account"
-        );
+        require(msg.sender == owner, "Oops, you are not the owner. Please try again with a different account");
         _;
     }
 
-    function createMaxTweetLength(uint16 _maxTweetLength) public {
+    function setMaxTweetLength(uint16 _maxTweetLength) public onlyOwner {
         maxTweet = _maxTweetLength;
     }
 
@@ -36,6 +32,7 @@ contract Twitter {
         require(bytes(_tweet).length <= maxTweet, "Tweet is too long bro!");
 
         Tweet memory newTweet = Tweet({
+            id: uint16(tweets[msg.sender].length),
             author: msg.sender,
             content: _tweet,
             timestamp: block.timestamp,
@@ -43,6 +40,17 @@ contract Twitter {
         });
 
         tweets[msg.sender].push(newTweet);
+    }
+
+    function addLike(address author, uint16 id) external {
+        require(tweets[author][id].id == id, "Oops, Tweet does not exist.");
+        tweets[author][id].likes++;
+    }
+
+    function subtractLike(address author, uint16 id) external {
+        require(tweets[author][id].id == id, "Oops, Tweet does not exist.");
+        require(tweets[author][id].likes > 0, "Oops, Sorry not enough likes.");
+        tweets[author][id].likes--;
     }
 
     function getTweet(uint _i) public view returns (Tweet memory) {
