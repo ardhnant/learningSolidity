@@ -8,7 +8,7 @@ contract solidityEvents{
 
   event newUserRegistration( address indexed user, string name);
 
-  struct{
+  struct User {
     string username;
     uint8 age;
   }
@@ -16,7 +16,7 @@ contract solidityEvents{
   mapping( address => User) public users;
 
   function registerUser( string memory _username, uint8 _age) public {
-    User storage newUser = user[msg.sender];
+    User storage newUser = users[msg.sender];
     newUser.username = _username;
     newUser.age = _age;
 
